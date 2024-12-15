@@ -2,7 +2,8 @@ import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import { createSwaggerSpec } from 'next-swagger-doc';
 import dynamic from 'next/dynamic';
 import 'swagger-ui-react/swagger-ui.css';
-
+import fs from 'fs';
+import path from 'path';
 
 const SwaggerUI = dynamic(() => import('swagger-ui-react'), { ssr: false });
 
@@ -23,7 +24,7 @@ export const getStaticProps: GetStaticProps = async () => {
       },
       servers: [
         {
-          url: 'http://localhost:3000',
+          url: 'http://127.0.0.1:4010/',
           description: 'Local development server',
         },
       ],
@@ -52,6 +53,11 @@ export const getStaticProps: GetStaticProps = async () => {
     },
   });
 
+  // スキーマをJSONファイルとして出力
+  const outputPath = path.join(process.cwd(), './src/mocks/openapi.json');
+  fs.writeFileSync(outputPath, JSON.stringify(spec, null, 2), 'utf8');
+  console.log(`✅ OpenAPI schema has been saved to ${outputPath}`);
+
   return {
     props: {
       spec,
@@ -61,3 +67,42 @@ export const getStaticProps: GetStaticProps = async () => {
 
 
 export default ApiDoc;
+
+        // '/api/users': {
+        //   get: {
+        //     summary: 'Get User List',
+        //     description: 'Returns a list of user information.',
+        //     responses: {
+        //       '200': {
+        //         description: 'A successful response containing user information.',
+        //         content: {
+        //           'application/json': {
+        //             schema: {
+        //               type: 'array',
+        //               items: {
+        //                 type: 'object',
+        //                 properties: {
+        //                   id: {
+        //                     type: 'integer',
+        //                     description: 'The unique ID of the user.',
+        //                     example: 1,
+        //                   },
+        //                   name: {
+        //                     type: 'string',
+        //                     description: 'The name of the user.',
+        //                     example: 'John Doe',
+        //                   },
+        //                   email: {
+        //                     type: 'string',
+        //                     description: 'The email of the user.',
+        //                     example: 'johndoe@example.com',
+        //                   },
+        //                 },
+        //               },
+        //             },
+        //           },
+        //         },
+        //       },
+        //     },
+        //   },
+        // },
